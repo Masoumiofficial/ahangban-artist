@@ -225,9 +225,16 @@ def run_qc(settings: Settings, artist_dir: Path, metadata: dict[str, Any]) -> di
         "no-unintended-text-watermark-instrument-or-generated-logo",
         "master-has-no-verification-badge",
     ]
-    limitations = [] if review_matches_revision else [
-        "پذیرش نهایی نیازمند مشاهده و تأیید بازبین برای هویت، قاب، متن و خوانایی است؛ این موارد با QC فنی اثبات نمی‌شوند."
-    ]
+    limitations: list[str] = []
+    transform = metadata.get("generation", {}).get("transform", {})
+    if transform.get("upscaled"):
+        limitations.append(
+            "خروجی شامل upscale از master ورودی است؛ وضوح واقعی به منبع محدود است و این وضعیت با پذیرش بصری حذف نمی‌شود."
+        )
+    if not review_matches_revision:
+        limitations.append(
+            "پذیرش نهایی نیازمند مشاهده و تأیید بازبین برای هویت، قاب، متن و خوانایی است؛ این موارد با QC فنی اثبات نمی‌شوند."
+        )
 
     return {
         "schema_version": "1.0",

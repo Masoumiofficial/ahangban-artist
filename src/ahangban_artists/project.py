@@ -234,7 +234,7 @@ def intake(
             "generation": {
                 "status": "awaiting-external-master",
                 "prompt_version": settings.prompt_version,
-                "mode": "reference-based editing in an external image model required",
+                "mode": "reference-preserving external edit required",
                 "identity_guaranteed_by_pipeline": False,
                 "generator": None,
             },
@@ -506,6 +506,7 @@ def approve_visual_review(
         raise QualityGateError("QC فنی شکست خورده است؛ تأیید بصری نمی‌تواند آن را نادیده بگیرد.")
     reviewer = validate_display_name(reviewer, "نام بازبین")
     now = utc_now()
+    project.metadata["updated_at"] = now
     project.metadata["review"] = {
         "status": "approved",
         "revision": project.metadata["revision"],
@@ -524,11 +525,15 @@ def approve_visual_review(
     }
     project.save_metadata()
     report = project.refresh_qc()
+    if report["acceptance_status"] == "pass":
+        project.metadata["generation"]["status"] = "accepted"
+        project.save_metadata()
+    review_note = f"- {notes.strip()}\n" if notes.strip() else ""
     append_text(
         project.changelog_path,
         f"## تأیید بازبینی بصری — {now}\n\n"
         f"- بازبین: {reviewer}\n"
         f"- بازبینی {project.metadata['revision']} پس از مشاهدهٔ مرجع، نسخهٔ اصلی، خروجی، اندازهٔ کوچک و برش دایره‌ای تأیید شد.\n"
-        f"{('- ' + notes.strip() + chr(10)) if notes.strip() else ''}\n",
+        + review_note,
     )
     return project, report

@@ -208,6 +208,20 @@ def test_non_square_master_uses_proportional_contain(settings: Settings, image_f
     assert report["technical_status"] == "pass"
 
 
+def test_upscale_remains_visible_as_a_limitation_after_approval(
+    settings: Settings, image_factory, tmp_path: Path
+) -> None:
+    reference = image_factory(tmp_path / "reference.png")
+    small_master = image_factory(tmp_path / "small-master.png", size=(500, 500))
+    project = intake(settings, reference, "آزمون وضوح", "Upscale Report Test")
+    project, _ = finalize(settings, project.slug, small_master)
+    project, report = approve_visual_review(settings, project.slug, "Synthetic review state test")
+
+    assert report["acceptance_status"] == "pass"
+    assert project.metadata["generation"]["transform"]["upscaled"]
+    assert any("upscale" in limitation for limitation in report["limitations"])
+
+
 def test_grayscale_input_is_not_colorized(settings: Settings, image_factory, tmp_path: Path) -> None:
     reference = image_factory(tmp_path / "reference-gray.png", mode="L")
     master = image_factory(tmp_path / "master-gray.png", mode="L")
@@ -235,6 +249,9 @@ def test_visual_approval_is_bound_to_revision_and_file_hashes(
         "فقط آزمون وضعیت نرم‌افزار، نه تأیید هویت یک شخص واقعی",
     )
     assert report["acceptance_status"] == "pass"
+    assert project.metadata["generation"]["status"] == "accepted"
+    assert project.metadata["updated_at"] == project.metadata["review"]["reviewed_at"]
+    assert not project.changelog_path.read_text(encoding="utf-8").endswith("\n\n")
 
     project, report = finalize(
         settings,
