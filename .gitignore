@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local environments and tooling
+.venv/
+venv/
+.env
+.env.*
+
+# Temporary output (artist source files and deliverables are NOT ignored)
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
