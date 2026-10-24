@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0",
+  "system_name": "APEX Ω∞ — Ahangban Artist Cover System",
+  "design_version": "1.0.0",
+  "prompt_version": "1.0",
+  "canvas": {
+    "width": 1080,
+    "height": 1080,
+    "aspect_ratio": "1:1",
+    "format": "PNG",
+    "color_space": "sRGB",
+    "background": "#111111",
+    "safe_area_ratio": 0.8,
+    "circular_crop_preview": true
+  },
+  "palette": {
+    "ink": "#111111",
+    "charcoal": "#222222",
+    "brand_blue": "#185ADB",
+    "verification_gold": "#D4AF37",
+    "white": "#FFFFFF"
+  },
+  "layout": {
+    "logo": {
+      "source": "logo-ahangban/ahangban-logo-horizontal-reverse.svg",
+      "visible_width": 160,
+      "x": 160,
+      "y": 884,
+      "trim_transparent_padding": true,
+      "note": "Official reverse lockup; fixed visible box, never redrawn or recolored."
+    },
+    "verification_badge": {
+      "size": 72,
+      "x": 848,
+      "y": 848,
+      "layers": [
+        "verified-blue.svg",
+        "verified-gold.svg"
+      ],
+      "note": "Both independent layers are applied only for explicitly verified artists."
+    }
+  },
+  "reference": {
+    "supported_formats": [
+      "PNG",
+      "JPEG",
+      "WEBP",
+      "TIFF"
+    ],
+    "preserve_original_bytes": true,
+    "minimum_recommended_short_edge": 1080
+  },
+  "paths": {
+    "artists_root": "brand-kit/artists",
+    "prompt": "brand-kit/prompts/artist-portrait-fa.txt",
+    "canonical_badges": "brand-kit/badges"
+  },
+  "source_of_truth": {
+    "repository": "https://github.com/Masoumiofficial/ahangban",
+    "commit": "a306da2e0664e98de393627721d2a72ac952e7bb",
+    "brand_book": "brand-kit/brand-book-fa.md",
+    "design_system": "brand-kit/design-system-fa.md"
+  }
+}
