@@ -222,6 +222,30 @@ def test_upscale_remains_visible_as_a_limitation_after_approval(
     assert any("upscale" in limitation for limitation in report["limitations"])
 
 
+def test_low_resolution_reference_limitation_survives_a_pixel_identical_refinalization(
+    settings: Settings, image_factory, tmp_path: Path
+) -> None:
+    reference = image_factory(tmp_path / "small-reference.png", size=(798, 495))
+    already_square_master = image_factory(tmp_path / "square-master.png", size=(1080, 1080))
+    project = intake(settings, reference, "آزمون وضوح مرجع", "Low Res Reference")
+    project, report = finalize(settings, project.slug, already_square_master, generator="synthetic-fixture")
+
+    assert report["technical_status"] == "pass"
+    assert project.metadata["generation"]["transform"]["upscaled"] is False
+    assert any("وضوح مرجع اصلی 495px" in limitation for limitation in report["limitations"])
+
+    replacement = project.master_path.read_bytes()
+    (tmp_path / "second-pass.png").write_bytes(replacement)
+    project, second = finalize(
+        settings,
+        project.slug,
+        tmp_path / "second-pass.png",
+        on_existing="archive",
+        change="آزمون بازتولید بدون تغییر پیکسل",
+    )
+    assert any("وضوح مرجع اصلی 495px" in limitation for limitation in second["limitations"])
+
+
 def test_grayscale_input_is_not_colorized(settings: Settings, image_factory, tmp_path: Path) -> None:
     reference = image_factory(tmp_path / "reference-gray.png", mode="L")
     master = image_factory(tmp_path / "master-gray.png", mode="L")

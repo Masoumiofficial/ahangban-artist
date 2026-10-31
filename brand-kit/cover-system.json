@@ -1,7 +1,7 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "system_name": "APEX Ω∞ — Ahangban Artist Cover System",
-  "design_version": "1.0.0",
+  "design_version": "1.1.0",
   "prompt_version": "1.0",
   "canvas": {
     "width": 1080,
@@ -19,6 +19,16 @@
     "brand_blue": "#185ADB",
     "verification_gold": "#D4AF37",
     "white": "#FFFFFF"
+  },
+  "fonts": {
+    "family": "Vazirmatn",
+    "source": "brand-kit/fonts/SOURCES.md",
+    "license": "brand-kit/fonts/OFL.txt",
+    "files": {
+      "400": "brand-kit/fonts/Vazirmatn-Regular.ttf",
+      "700": "brand-kit/fonts/Vazirmatn-Bold.ttf"
+    },
+    "note": "پرونده‌های pinned در مخزن؛ رندر متن فقط با این‌ها و skip_system_fonts انجام می‌شود تا نتیجه روی هر سیستمی یکسان بماند."
   },
   "layout": {
     "logo": {
@@ -38,6 +48,71 @@
         "verified-gold.svg"
       ],
       "note": "Both independent layers are applied only for explicitly verified artists."
+    },
+    "profile": {
+      "enabled": true,
+      "portrait_fit": "medallion",
+      "content_padding": 18,
+      "portrait_medallion": {
+        "center_x": 540,
+        "center_y": 540,
+        "diameter": 824,
+        "focus_y": 0.4,
+        "ring_width": 5,
+        "ring_color": "brand_blue",
+        "ring_alpha": 216,
+        "ring_gap": 4
+      },
+      "scrim": {
+        "enabled": true,
+        "color": "ink",
+        "top_y": 540,
+        "bottom_y": 868,
+        "max_alpha": 246
+      },
+      "name_fa": {
+        "weight": 700,
+        "size": 86,
+        "min_size": 52,
+        "baseline_y": 722,
+        "color": "white",
+        "alpha": 255
+      },
+      "divider": {
+        "enabled": true,
+        "width": 132,
+        "height": 3,
+        "center_y": 754,
+        "color": "brand_blue",
+        "alpha": 235
+      },
+      "name_en": {
+        "weight": 400,
+        "size": 33,
+        "min_size": 22,
+        "baseline_y": 790,
+        "color": "white",
+        "alpha": 224,
+        "letter_spacing": 7,
+        "uppercase": true
+      },
+      "logo": {
+        "visible_width": 200,
+        "center_x": 540,
+        "top_y": 826
+      },
+      "verification_badge": {
+        "size": 72,
+        "anchor": "disc_edge",
+        "angle_deg": -52,
+        "inset": 70
+      },
+      "notes": [
+        "پرتره و حلقهٔ آن داخل دایرهٔ امن مرکزی (safe_area_ratio) می‌مانند.",
+        "نام فارسی، نام لاتین، خط جداکننده و لوگو باید کامل داخل حلقهٔ مدالیون منهای content_padding بمانند، پس هیچ متن هرگز از خط حلقه عبور نمی‌کند.",
+        "اندازهٔ نام‌ها با خودتنظیمی (shrink-to-fit) داخل وتر همان دایره کمینه می‌شود؛ هرگز متن بیرون دایره نمی‌رود.",
+        "لوگوی رسمی دوباره‌رنگ، بازطراحی یا توسط مدل تصویرساز ساخته نمی‌شود."
+      ]
     }
   },
   "reference": {

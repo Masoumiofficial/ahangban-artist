@@ -1,11 +1,11 @@
 {
   "schema_version": "1.0",
-  "checked_at": "2026-10-24T14:27:26Z",
+  "checked_at": "2026-10-31T11:55:37Z",
   "artist_id": "mohammadreza-shajarian",
   "slug": "mohammadreza-shajarian",
   "name_fa": "محمدرضا شجریان",
   "name_en": "Mohammadreza Shajarian",
-  "revision": 1,
+  "revision": 2,
   "verification_status": "unverified",
   "technical_status": "pass",
   "visual_review_status": "approved",
@@ -24,12 +24,12 @@
     {
       "id": "fixed_brand_assets_unmodified",
       "status": "pass",
-      "detail": "هش فایل رسمی لوگو و لایه‌های SVG مستقل با فرادادهٔ پروژه مقایسه شد."
+      "detail": "هش فایل رسمی لوگو، لایه‌های SVG مستقل و فونت‌های پین‌شده با فرادادهٔ پروژه مقایسه شد؛ لوگو=True، نشان‌ها=True، فونت‌ها=True"
     },
     {
       "id": "design_version_consistent",
       "status": "pass",
-      "detail": "طراحی پروژه=1.0.0، طراحی ابزار=1.0.0"
+      "detail": "طراحی پروژه=1.1.0، طراحی ابزار=1.1.0"
     },
     {
       "id": "master_png_1080_srgb",
@@ -69,7 +69,12 @@
     {
       "id": "brand_layers_inside_circular_crop",
       "status": "pass",
-      "detail": "قاب‌بندی محافظه‌کارانهٔ لوگو و نشان داخل دایرهٔ 1080 بررسی شد؛ امنی چهره نیازمند بازبینی بصری است."
+      "detail": "دایرهٔ امن 432px و دایرهٔ محتوا 403px به‌صورت محافظه‌کارانه بررسی شد؛ هیچ المانی بیرون از دایرهٔ خودش نیست."
+    },
+    {
+      "id": "name_layer_from_metadata_and_circle_safe",
+      "status": "pass",
+      "detail": "بلوک نام بازتولید و با فراداده مقایسه شد؛ bbox=[233, 661, 847, 793]، داخل دایرهٔ امن=True، هم‌خوان با metadata=True، ارتفاع جوهری نام فارسی=86px (خوانا=True)"
     }
   ],
   "required_visual_checks": [
@@ -97,8 +102,8 @@
       "has_icc_profile": true,
       "srgb_profile": true,
       "icc_profile_description": "sRGB built-in",
-      "bytes": 676796,
-      "sha256": "f7c55b1f06fb2bf47db902d396a461d5be3652bbcbac46f61a94ff4662f3f613"
+      "bytes": 676794,
+      "sha256": "6feb39768416249db72fce3dd5af8ac3908be78a001ca861169f13757f15e52b"
     },
     "final": {
       "path": "brand-kit/artists/mohammadreza-shajarian/portrait/artist-1080x1080.png",
@@ -109,8 +114,8 @@
       "has_icc_profile": true,
       "srgb_profile": true,
       "icc_profile_description": "sRGB built-in",
-      "bytes": 680539,
-      "sha256": "21e54e38efb3228fdbeb6b87822e34b35fd90100505c0eb9c0ab3c44382a555b"
+      "bytes": 455371,
+      "sha256": "9946a213b4c6fa6557dc051ce22bb0d5465eba2d91d04b737dadfe4a77cd19c9"
     },
     "preview": {
       "path": "brand-kit/artists/mohammadreza-shajarian/portrait/artist-unverified-preview.png",
@@ -121,12 +126,12 @@
       "has_icc_profile": true,
       "srgb_profile": true,
       "icc_profile_description": "sRGB built-in",
-      "bytes": 775285,
-      "sha256": "6d54515e0f1c7aebc571221aeaed8a87352d26b3eca1f58624c5d381c37ddd0c"
+      "bytes": 524834,
+      "sha256": "043bc83b330247f10519a387a7c7dad44f62b4665ba45c1d45518d1ea9aa9906"
     }
   },
   "limitations": [
-    "خروجی شامل upscale از master ورودی است؛ وضوح واقعی به منبع محدود است و این وضعیت با پذیرش بصری حذف نمی‌شود."
+    "وضوح مرجع اصلی 495px است (کمینهٔ پیشنهادی 1080px)؛ هر خروجی مشتق‌شده از همین مرجع، از جمله نسخه‌های بازتولیدشده بدون تغییر master، همچنان از منبع محدود می‌آید و این با QC یا باز‌نشر نسخه حذف نمی‌شود."
   ],
   "note": "Technical QC does not perform facial recognition and never infers identity or verification status."
 }

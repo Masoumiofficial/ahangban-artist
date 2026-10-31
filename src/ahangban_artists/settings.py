@@ -7,7 +7,6 @@ from typing import Any
 
 from .errors import ValidationError
 
-
 EXPECTED_PALETTE = {
     "ink": "#111111",
     "charcoal": "#222222",
@@ -15,6 +14,14 @@ EXPECTED_PALETTE = {
     "verification_gold": "#D4AF37",
     "white": "#FFFFFF",
 }
+
+SUPPORTED_DESIGN_VERSIONS = {"1.1.0"}
+REQUIRED_PROFILE_KEYS = (
+    "portrait_medallion",
+    "name_fa",
+    "name_en",
+    "logo",
+)
 
 
 @dataclass(frozen=True)
@@ -45,8 +52,9 @@ class Settings:
             raise ValidationError("فرمت و فضای رنگ خروجی باید PNG و sRGB باشد.")
         if self.data.get("palette") != EXPECTED_PALETTE:
             raise ValidationError("پالت برند با مقادیر ثابت آهنگ‌بان ناسازگار است.")
-        if self.data.get("design_version") != "1.0.0":
-            raise ValidationError("این نسخهٔ ابزار فقط design_version=1.0.0 را پشتیبانی می‌کند.")
+        if self.data.get("design_version") not in SUPPORTED_DESIGN_VERSIONS:
+            supported = ", ".join(sorted(SUPPORTED_DESIGN_VERSIONS))
+            raise ValidationError(f"این نسخهٔ ابزار فقط design_version={supported} را پشتیبانی می‌کند.")
 
         for key in ("prompt", "canonical_badges", "artists_root"):
             if key not in self.data.get("paths", {}):
@@ -59,6 +67,22 @@ class Settings:
             path = self.canonical_badges_path / layer
             if not path.is_file():
                 raise ValidationError(f"لایهٔ نشان پیدا نشد: {path}")
+        if not isinstance(self.data.get("fonts", {}).get("files"), dict) or not self.font_files:
+            raise ValidationError("هیچ فایل فونت پین‌شده‌ای در تنظیمات تعریف نشده است.")
+        for weight, path in self.font_files.items():
+            if not path.is_file():
+                raise ValidationError(f"فایل فونت پین‌شده پیدا نشد (وزن {weight}): {path}")
+        if not self.font_license_path.is_file():
+            raise ValidationError(f"مجوز فونت پیدا نشد: {self.font_license_path}")
+        if self.profile_enabled:
+            missing = [key for key in REQUIRED_PROFILE_KEYS if key not in self.profile_layout]
+            if missing:
+                raise ValidationError(
+                    "چیدمان پروفایل کامل نیست؛ کلیدهای لازم: " + ", ".join(missing)
+                )
+            ratio = float(canvas.get("safe_area_ratio", 1.0))
+            if not 0.0 < ratio <= 1.0:
+                raise ValidationError("safe_area_ratio باید عددی در بازهٔ ۰ تا ۱ باشد.")
 
     def path(self, relative: str) -> Path:
         candidate = (self.root / relative).resolve()
@@ -79,6 +103,10 @@ class Settings:
     @property
     def background(self) -> str:
         return str(self.data["canvas"]["background"])
+
+    @property
+    def safe_area_ratio(self) -> float:
+        return float(self.data["canvas"].get("safe_area_ratio", 1.0))
 
     @property
     def design_version(self) -> str:
@@ -117,9 +145,38 @@ class Settings:
         return list(self.badge_layout["layers"])
 
     @property
+    def profile_layout(self) -> dict[str, Any]:
+        return self.data["layout"].get("profile", {})
+
+    @property
+    def profile_enabled(self) -> bool:
+        return bool(self.profile_layout.get("enabled", False))
+
+    @property
+    def font_family(self) -> str:
+        return str(self.data.get("fonts", {}).get("family", "Vazirmatn"))
+
+    @property
+    def font_license_path(self) -> Path:
+        return self.path(str(self.data["fonts"]["license"]))
+
+    @property
+    def font_files(self) -> dict[int, Path]:
+        files = self.data.get("fonts", {}).get("files", {})
+        return {int(weight): self.path(str(relative)) for weight, relative in files.items()}
+
+    @property
     def minimum_reference_edge(self) -> int:
         return int(self.data["reference"]["minimum_recommended_short_edge"])
 
     @property
     def supported_formats(self) -> set[str]:
         return set(self.data["reference"]["supported_formats"])
+
+    def color(self, value: str) -> str:
+        """Resolve a palette key or a literal hex color from the brand palette."""
+        palette = self.data.get("palette", {})
+        resolved = palette.get(value, value)
+        if not isinstance(resolved, str) or not resolved.startswith("#"):
+            raise ValidationError(f"رنگ «{value}» در پالت برند تعریف نشده است.")
+        return resolved

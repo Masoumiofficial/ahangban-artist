@@ -1,0 +1,125 @@
+{
+  "schema_version": "1.0",
+  "artist_id": "mohammadreza-shajarian",
+  "name_fa": "محمدرضا شجریان",
+  "name_en": "Mohammadreza Shajarian",
+  "slug": "mohammadreza-shajarian",
+  "verification": {
+    "status": "unverified",
+    "verified": false,
+    "source": "default-unverified",
+    "updated_at": "2026-10-24T14:24:27Z",
+    "note": "Verification is project data; a badge on an image is not identity evidence."
+  },
+  "created_at": "2026-10-24T14:24:27Z",
+  "updated_at": "2026-10-24T14:25:14Z",
+  "design_version": "1.0.0",
+  "revision": 1,
+  "paths": {
+    "reference": "brand-kit/artists/mohammadreza-shajarian/source/reference-original.jpg",
+    "master": "brand-kit/artists/mohammadreza-shajarian/portrait/artist-master.png",
+    "final": "brand-kit/artists/mohammadreza-shajarian/portrait/artist-1080x1080.png",
+    "preview": "brand-kit/artists/mohammadreza-shajarian/portrait/artist-unverified-preview.png",
+    "prompt": "brand-kit/prompts/artist-portrait-fa.txt",
+    "logo": "logo-ahangban/ahangban-logo-horizontal-reverse.svg",
+    "badges": [
+      "brand-kit/artists/mohammadreza-shajarian/badges/verified-blue.svg",
+      "brand-kit/artists/mohammadreza-shajarian/badges/verified-gold.svg"
+    ],
+    "changelog": "brand-kit/artists/mohammadreza-shajarian/history/CHANGELOG.md"
+  },
+  "reference": {
+    "original_filename": "5-shajarian.jpg",
+    "format": "JPEG",
+    "suffix": ".jpg",
+    "width": 798,
+    "height": 495,
+    "aspect_ratio": 1.612121,
+    "mode": "RGB",
+    "has_alpha": false,
+    "has_icc_profile": false,
+    "appears_grayscale": true,
+    "bytes": 104596,
+    "sha256": "db0b7a49142b13f0f28ae6effe5f002a4effd6b8a47573b9ebd96ecd466f84bd",
+    "warnings": [
+      "ضلع کوتاه مرجع کمتر از 1080 پیکسل است؛ جزئیات هویتی جدید نباید در تولید پرتره اختراع شود.",
+      "مرجع مربع نیست؛ قاب و حاشیهٔ امن باید در تولید پرتره کنترل شوند.",
+      "پروفایل رنگ مرجع مشخص نیست؛ فایل اصلی دست‌نخورده می‌ماند و پروفایل خروجی جداگانه کنترل می‌شود."
+    ]
+  },
+  "assets": {
+    "logo_sha256": "8957ab63fa6e6ad446e762f419156c1d51c375888206fe8fd8487bd3a321a67d",
+    "badge_sha256": {
+      "verified-blue.svg": "77289f6f182e58f08cbecd9616edbc7913a17b3b21ea94af8d7098451805b7c0",
+      "verified-gold.svg": "927f9be2f0d84a79b840b523d6c14dd99ee35ac64ee27b822cbc72eac2e1f78e"
+    },
+    "logo_origin": {
+      "repository": "https://github.com/Masoumiofficial/ahangban",
+      "commit": "a306da2e0664e98de393627721d2a72ac952e7bb",
+      "brand_book": "brand-kit/brand-book-fa.md",
+      "design_system": "brand-kit/design-system-fa.md"
+    }
+  },
+  "generation": {
+    "status": "accepted",
+    "prompt_version": "1.0",
+    "mode": "reference-preserving external edit required",
+    "identity_guaranteed_by_pipeline": false,
+    "generator": "non-generative editorial crop only; crop=(200,0,695,495); no AI synthesis, no colorization, no relighting",
+    "external_master_sha256": "875c4490d2a0e2e53b38a2a9077cb44c7ed463ea990d05cd2f4f667f0094c3f6",
+    "transform": {
+      "operation": "exif-orientation, sRGB conversion, proportional contain, centered charcoal canvas",
+      "generative_retouching_by_pipeline": false,
+      "source_format": "PNG",
+      "source_width": 495,
+      "source_height": 495,
+      "resized_width": 1080,
+      "resized_height": 1080,
+      "offset_x": 0,
+      "offset_y": 0,
+      "scale": 2.18181818,
+      "upscaled": true,
+      "background_fill": "#111111"
+    },
+    "master_sha256": "f7c55b1f06fb2bf47db902d396a461d5be3652bbcbac46f61a94ff4662f3f613"
+  },
+  "review": {
+    "status": "approved",
+    "revision": 1,
+    "reviewer": "Arena agent visual review",
+    "reviewed_at": "2026-10-24T14:25:14Z",
+    "notes": "مرجع سیاه‌وسفید، مرجع رنگی، master، خروجی نهایی، پیش‌نمایش دایره‌ای و نسخهٔ 128×128 مشاهده شدند. هویت، سن ظاهری، مو و لباس با مرجع سازگارند؛ تنها برش غیرمولّد و resample انجام شده و هیچ تولید چهره یا رنگی‌سازی صورت نگرفته است. مو، پیشانی و چانه در دایره امن‌اند و چهره در اندازهٔ کوچک خواناست. master بدون لایه‌های برند و final فقط با لوگوی رسمی و بدون نشان تأیید است. محدودیت: منبع 495px ارتفاع دارد و خروجی upscale است؛ هیچ جزئیات جایگزینی اختراع نشده است.",
+    "master_sha256": "f7c55b1f06fb2bf47db902d396a461d5be3652bbcbac46f61a94ff4662f3f613",
+    "final_sha256": "21e54e38efb3228fdbeb6b87822e34b35fd90100505c0eb9c0ab3c44382a555b",
+    "checks": {
+      "identity_preserved": true,
+      "face_safe_in_central_80_percent_and_circle": true,
+      "readable_at_small_size": true,
+      "no_unintended_text_or_watermark": true,
+      "consistent_editorial_brand_direction": true
+    }
+  },
+  "changes": [
+    {
+      "revision": 0,
+      "at": "2026-10-24T14:24:27Z",
+      "type": "intake",
+      "description": "دو مرجع از کاربر دریافت شد. مرجع سیاه‌وسفید 5-shajarian.jpg به‌دلیل نور ادیتوریال و زمینهٔ تیره برای خروجی انتخاب شد؛ مرجع رنگی فقط برای مقایسهٔ بصری هویت استفاده و برای جلوگیری از فایل تکراری در پروژه ذخیره نشد. وضعیت تأیید ارائه نشده و پیش‌فرض تأییدنشده اعمال شد."
+    },
+    {
+      "revision": 1,
+      "at": "2026-10-24T14:24:40Z",
+      "type": "finalization",
+      "description": "برش غیرمولّد مربع از مرجع سیاه‌وسفید با حفظ کامل چهره و لباس؛ بدون رنگی‌سازی، رتوش چهره، تغییر نور یا افزودن عنصر. لوگوی رسمی در مرحلهٔ مستقل ترکیب شد؛ بدون نشان تأیید.",
+      "verification": "unverified",
+      "master_sha256": "f7c55b1f06fb2bf47db902d396a461d5be3652bbcbac46f61a94ff4662f3f613",
+      "final_sha256": "21e54e38efb3228fdbeb6b87822e34b35fd90100505c0eb9c0ab3c44382a555b"
+    }
+  ],
+  "quality": {
+    "technical_status": "pass",
+    "acceptance_status": "pass",
+    "last_checked_at": "2026-10-24T14:27:26Z",
+    "report": "brand-kit/artists/mohammadreza-shajarian/metadata/qc.json"
+  }
+}

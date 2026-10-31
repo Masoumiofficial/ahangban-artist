@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import tempfile
@@ -10,8 +11,9 @@ from typing import Any
 from .errors import ExistingArtistError, QualityGateError, ValidationError
 from .images import (
     analyze_reference,
+    brand_inputs,
     circular_preview,
-    compose_final,
+    compose_output,
     load_png,
     png_bytes,
     prepare_master,
@@ -112,6 +114,15 @@ class ArtistProject:
             layer_path = self.artist_dir / "badges" / layer_name
             if not layer_path.is_file() or sha256_file(layer_path) != expected_hash:
                 raise ValidationError(f"لایهٔ نشان «{layer_name}» تغییر کرده یا حذف شده است.")
+
+        recorded_fonts = assets.get("font_sha256", {})
+        for weight, font_path in self.settings.font_files.items():
+            expected_font = recorded_fonts.get(font_path.name)
+            # هش ثبت‌شده ملاک است؛ نبودِ آن فقط یعنی پروژه پیش از 1.1.0 پذیرفته شده
+            if expected_font is not None and sha256_file(font_path) != expected_font:
+                raise ValidationError(
+                    f"هش فونت پین‌شدهٔ «{font_path.name}» (وزن {weight}) با فرادادهٔ پروژه ناسازگار است."
+                )
 
     def refresh_qc(self) -> dict[str, Any]:
         from .qc import run_qc
@@ -229,6 +240,7 @@ def intake(
             "assets": {
                 "logo_sha256": sha256_file(settings.logo_path),
                 "badge_sha256": badge_hashes,
+                "font_sha256": {path.name: sha256_file(path) for path in settings.font_files.values()},
                 "logo_origin": settings.data["source_of_truth"],
             },
             "generation": {
@@ -331,6 +343,49 @@ def _archive_current(project: ArtistProject, include_master: bool, reason: str) 
     return relative_path(archive, project.settings.root)
 
 
+def _align_pre_existing_brand_baselines(project: ArtistProject, now: str) -> dict[str, object] | None:
+    """پُرکردن فیلدهای ثبت‌نشده هنگام بازتولید خروجی، نه بازنویسی بی‌قیدوبند.
+
+    اگر هش فونت از قبل ثبت شده و نخواند، `assert_immutable_inputs_intact` جلوی کار را
+    می‌گیرد؛ این تابع فقط پروژه‌های پذیرفته‌شده پیش از نسخهٔ ۱٫۱ را به روز می‌کند و
+    نتیجه را در فراداده ثبت می‌کند تا قابل ممیزی بماند.
+    """
+    assets = project.metadata.setdefault("assets", {})
+    recorded: dict[str, object] = {}
+    changes: dict[str, object] = {}
+
+    current_fonts = {path.name: sha256_file(path) for path in project.settings.font_files.values()}
+    if not assets.get("font_sha256"):
+        assets["font_sha256"] = current_fonts
+        changes["font_sha256"] = "ثبت نخستین هش فونت‌های پین‌شده برای پروژهٔ پیش از 1.1.0"
+    else:
+        for name, digest in current_fonts.items():
+            if assets["font_sha256"].get(name) is None:
+                assets["font_sha256"][name] = digest
+                recorded[name] = digest
+        if recorded:
+            changes["font_sha256_added"] = recorded
+
+    if project.metadata.get("design_version") != project.settings.design_version:
+        changes["design_version"] = {
+            "from": project.metadata.get("design_version"),
+            "to": project.settings.design_version,
+        }
+        project.metadata["design_version"] = project.settings.design_version
+
+    if not changes:
+        return None
+    project.metadata["brand_baseline_alignment"] = {"at": now, "changes": changes}
+    return changes
+
+
+def _record_profile_layout(project: ArtistProject, profile_info: dict[str, Any] | None, now: str) -> None:
+    if profile_info is None:
+        project.metadata.pop("profile", None)
+        return
+    project.metadata["profile"] = {**profile_info, "rendered_at": now}
+
+
 def _record_final_metadata(
     project: ArtistProject,
     now: str,
@@ -392,7 +447,8 @@ def finalize(
         raise ValidationError("برای جایگزینی نسخهٔ قبلی، شرح تغییر با --change الزامی است.")
 
     prepared_master, transform = prepare_master(master, settings)
-    final = compose_final(prepared_master, settings, project.artist_dir, project.verified)
+    brand = brand_inputs(settings, {**project.metadata, "generation": {"transform": transform}})
+    final, profile_info = compose_output(prepared_master, settings, project.artist_dir, project.verified, **brand)
     preview = circular_preview(final)
     master_bytes = png_bytes(prepared_master)
     final_bytes = png_bytes(final)
@@ -417,10 +473,15 @@ def finalize(
             "master_sha256": sha256_bytes(master_bytes),
         }
     )
+    aligned = _align_pre_existing_brand_baselines(project, now)
+    _record_profile_layout(project, profile_info, now)
     _record_final_metadata(project, now, description, "finalization", archive_path)
     project.save_metadata()
     report = project.refresh_qc()
 
+    alignment_line = (
+        "- هم‌راستاسازی مبنای دارایی برند: " + json.dumps(aligned, ensure_ascii=False) + "\n" if aligned else ""
+    )
     archive_line = f"- بایگانی نسخهٔ قبلی: `{archive_path}`\n" if archive_path else ""
     append_text(
         project.changelog_path,
@@ -431,6 +492,7 @@ def finalize(
         f"- خروجی نهایی: `{relative_path(project.final_path, settings.root)}`\n"
         f"- SHA-256 خروجی: `{sha256_file(project.final_path)}`\n"
         f"{archive_line}"
+        f"{alignment_line}"
         f"- QC فنی: **{report['technical_status']}**؛ پذیرش: **{report['acceptance_status']}**\n\n",
     )
     return project, report
@@ -456,7 +518,9 @@ def set_verification(
         else "تغییر صریح وضعیت هنرمند به تأییدنشده و حذف لایه‌های نشان از خروجی."
     )
     master_image = load_png(project.master_path)
-    final = compose_final(master_image, settings, project.artist_dir, verified)
+    final, profile_info = compose_output(
+        master_image, settings, project.artist_dir, verified, **brand_inputs(settings, project.metadata)
+    )
     preview = circular_preview(final)
     final_bytes = png_bytes(final)
     preview_bytes = png_bytes(preview)
@@ -478,9 +542,14 @@ def set_verification(
         "updated_at": now,
         "note": "Verification is project data; a badge on an image is not identity evidence.",
     }
+    aligned = _align_pre_existing_brand_baselines(project, now)
+    _record_profile_layout(project, profile_info, now)
     _record_final_metadata(project, now, description, "verification-change", archive_path)
     project.save_metadata()
     report = project.refresh_qc()
+    alignment_line = (
+        "- هم‌راستاسازی مبنای دارایی برند: " + json.dumps(aligned, ensure_ascii=False) + "\n" if aligned else ""
+    )
     append_text(
         project.changelog_path,
         f"## بازبینی {project.metadata['revision']} — تغییر وضعیت تأیید — {now}\n\n"
@@ -488,6 +557,7 @@ def set_verification(
         f"- وضعیت جدید: **{project.metadata['verification']['status']}** (user-explicit)\n"
         f"- پرترهٔ اصلی بدون تغییر: `{sha256_file(project.master_path)}`\n"
         f"- بایگانی نسخهٔ قبلی: `{archive_path}`\n"
+        f"{alignment_line}"
         f"- QC فنی: **{report['technical_status']}**؛ پذیرش: **{report['acceptance_status']}**\n\n",
     )
     return project, report, True

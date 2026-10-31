@@ -6,11 +6,20 @@ from typing import Any
 from .errors import ValidationError
 from .images import (
     _official_logo,
+    brand_inputs,
     circular_preview,
     compose_final,
     images_equal,
     inspect_png,
     load_png,
+)
+from .profile import (
+    content_containment,
+    disc_inside_circle,
+    profile_geometry,
+    rect_inside_circle,
+    render_name_layer,
+    safe_circle,
 )
 from .settings import Settings
 from .utils import relative_path, sha256_file, utc_now
@@ -101,10 +110,16 @@ def run_qc(settings: Settings, artist_dir: Path, metadata: dict[str, Any]) -> di
         badge_results.append(
             layer_path.is_file() and sha256_file(layer_path) == assets.get("badge_sha256", {}).get(layer_name)
         )
+    font_results = []
+    recorded_fonts = assets.get("font_sha256", {})
+    for font_path in settings.font_files.values():
+        expected_font = recorded_fonts.get(font_path.name)
+        font_results.append(bool(expected_font) and sha256_file(font_path) == expected_font)
     check(
         "fixed_brand_assets_unmodified",
-        logo_ok and all(badge_results),
-        "هش فایل رسمی لوگو و لایه‌های SVG مستقل با فرادادهٔ پروژه مقایسه شد.",
+        logo_ok and all(badge_results) and all(font_results),
+        "هش فایل رسمی لوگو، لایه‌های SVG مستقل و فونت‌های پین‌شده با فرادادهٔ پروژه مقایسه شد؛ "
+        f"لوگو={logo_ok}، نشان‌ها={all(badge_results)}، فونت‌ها={all(font_results) if font_results else 'بدون ثبت'}",
     )
 
     design_version_ok = metadata.get("design_version") == settings.design_version
@@ -148,7 +163,9 @@ def run_qc(settings: Settings, artist_dir: Path, metadata: dict[str, Any]) -> di
             master_image = load_png(master_path)
             actual_final = load_png(final_path)
             actual_preview = load_png(active_preview_path)
-            expected_final = compose_final(master_image, settings, artist_dir, verified)
+            expected_final = compose_final(
+                master_image, settings, artist_dir, verified, **brand_inputs(settings, metadata)
+            )
             expected_preview = circular_preview(expected_final)
             final_matches = images_equal(actual_final, expected_final)
             preview_matches = images_equal(actual_preview, expected_preview)
@@ -172,19 +189,80 @@ def run_qc(settings: Settings, artist_dir: Path, metadata: dict[str, Any]) -> di
         )
 
     try:
-        logo, logo_position = _official_logo(settings)
-        badge_layout = settings.badge_layout
-        badge_size = (int(badge_layout["size"]), int(badge_layout["size"]))
-        badge_position = (int(badge_layout["x"]), int(badge_layout["y"]))
-        logo_inside = _rectangle_inside_circle(logo_position, logo.size, settings.width)
-        badge_inside = _rectangle_inside_circle(badge_position, badge_size, settings.width)
-        check(
-            "brand_layers_inside_circular_crop",
-            logo_inside and badge_inside,
-            "قاب‌بندی محافظه‌کارانهٔ لوگو و نشان داخل دایرهٔ 1080 بررسی شد؛ امنی چهره نیازمند بازبینی بصری است.",
-        )
+        if settings.profile_enabled:
+            center, radius = safe_circle(settings)
+            geometry = profile_geometry(settings)
+            content_center, content_radius = content_containment(settings, geometry)
+            logo, logo_position = _official_logo(settings, geometry["logo"])
+            # مدالیون یک قرص است، نه یک مستطیل؛ با قرص‌داخل‌قرص سنجیده می‌شود
+            medallion = geometry["medallion"]
+            boxes = {
+                "لوگو": (
+                    (
+                        logo_position[0],
+                        logo_position[1],
+                        logo_position[0] + logo.width,
+                        logo_position[1] + logo.height,
+                    ),
+                    content_center,
+                    content_radius,
+                ),
+            }
+            if verified:
+                badge_size = int(geometry["badge"]["size"])
+                badge_x = int(geometry["badge"].get("x", settings.badge_layout["x"]))
+                badge_y = int(geometry["badge"].get("y", settings.badge_layout["y"]))
+                boxes["نشان تأیید"] = ((badge_x, badge_y, badge_x + badge_size, badge_y + badge_size), center, radius)
+            outside = [name for name, (box, box_center, box_radius) in boxes.items() if not rect_inside_circle(box, box_center, box_radius)]
+            if not disc_inside_circle((medallion["center_x"], medallion["center_y"]), medallion["outer_radius"], center, radius):
+                outside.append("مدالیون پرتره")
+            check(
+                "brand_layers_inside_circular_crop",
+                not outside,
+                f"دایرهٔ امن {radius:.0f}px و دایرهٔ محتوا {content_radius:.0f}px به‌صورت محافظه‌کارانه بررسی شد؛ "
+                + ("بیرون‌زده: " + ", ".join(outside) if outside else "هیچ المانی بیرون از دایرهٔ خودش نیست."),
+            )
+        else:
+            logo, logo_position = _official_logo(settings)
+            badge_layout = settings.badge_layout
+            badge_size = (int(badge_layout["size"]), int(badge_layout["size"]))
+            badge_position = (int(badge_layout["x"]), int(badge_layout["y"]))
+            logo_inside = _rectangle_inside_circle(logo_position, logo.size, settings.width)
+            badge_inside = _rectangle_inside_circle(badge_position, badge_size, settings.width)
+            check(
+                "brand_layers_inside_circular_crop",
+                logo_inside and badge_inside,
+                "قاب‌بندی محافظه‌کارانهٔ لوگو و نشان داخل دایرهٔ 1080 بررسی شد؛ امنی چهره نیازمند بازبینی بصری است.",
+            )
     except (KeyError, ValueError, ValidationError) as exc:
         check("brand_layers_inside_circular_crop", False, str(exc))
+
+    if settings.profile_enabled:
+        try:
+            geometry = profile_geometry(settings)
+            center, radius = content_containment(settings, geometry)
+            _, name_info = render_name_layer(settings, str(metadata["name_fa"]), str(metadata["name_en"]), geometry)
+            recorded = metadata.get("profile", {}).get("names", {})
+            same_geometry = (
+                recorded.get("lines") == name_info["lines"]
+                and recorded.get("element_bboxes") == name_info["element_bboxes"]
+            )
+            block = tuple(name_info["block_bbox"])
+            inside = all(
+                rect_inside_circle(tuple(box), center, radius) for box in name_info["element_bboxes"].values()
+            )
+            fa_line = next(item for item in name_info["lines"] if item["role"] == "name_fa")
+            fa_height = fa_line["ink_bbox"][3] - fa_line["ink_bbox"][1]
+            readable = fa_height >= int(settings.profile_layout["name_fa"].get("min_size", 0)) * 0.6
+            check(
+                "name_layer_from_metadata_and_circle_safe",
+                inside and same_geometry and readable,
+                "بلوک نام بازتولید و با فراداده مقایسه شد؛ "
+                f"bbox={list(block)}، داخل دایرهٔ امن={inside}، هم‌خوان با metadata={same_geometry}، "
+                f"ارتفاع جوهری نام فارسی={fa_height}px (خوانا={readable})",
+            )
+        except (KeyError, ValueError, ValidationError) as exc:
+            check("name_layer_from_metadata_and_circle_safe", False, str(exc))
 
     technical_status = "pass" if all(item["status"] == "pass" for item in checks) else "fail"
     review = metadata.get("review", {})
@@ -226,6 +304,28 @@ def run_qc(settings: Settings, artist_dir: Path, metadata: dict[str, Any]) -> di
         "master-has-no-verification-badge",
     ]
     limitations: list[str] = []
+    reference_info = metadata.get("reference", {})
+    reference_edge = min(
+        int(reference_info.get("width") or 0), int(reference_info.get("height") or 0)
+    ) if reference_info.get("width") and reference_info.get("height") else 0
+    if 0 < reference_edge < settings.minimum_reference_edge:
+        limitations.append(
+            f"وضوح مرجع اصلی {reference_edge}px است (کمینهٔ پیشنهادی {settings.minimum_reference_edge}px)؛ "
+            "هر خروجی مشتق‌شده از همین مرجع، از جمله نسخه‌های بازتولیدشده بدون تغییر master، همچنان از "
+            "منبع محدود می‌آید و این با QC یا باز‌نشر نسخه حذف نمی‌شود."
+        )
+    if settings.profile_enabled:
+        shrink = [
+            line
+            for line in metadata.get("profile", {}).get("names", {}).get("lines", [])
+            if line.get("shrink_applied")
+        ]
+        if shrink:
+            limitations.append(
+                "برای ماندن داخل دایرهٔ امن، اندازهٔ نام کاهش یافت ("
+                + "، ".join(f"{item['role']}={item['size_px']}px" for item in shrink)
+                + ")؛ این کاهش از خوانایی در اندازهٔ کوچک باید بصری تأیید شود."
+            )
     transform = metadata.get("generation", {}).get("transform", {})
     if transform.get("upscaled"):
         limitations.append(

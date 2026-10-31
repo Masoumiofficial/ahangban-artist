@@ -158,7 +158,8 @@ def load_png(path: str | Path) -> Image.Image:
         return image.copy()
 
 
-def _official_logo(settings: Settings) -> tuple[Image.Image, tuple[int, int]]:
+def _official_logo(settings: Settings, layout: dict[str, Any] | None = None) -> tuple[Image.Image, tuple[int, int]]:
+    """رندر لوگوی رسمی در چیدمان خواسته‌شده؛ فایل هرگز بازطراحی یا دوباره‌رنگ نمی‌شود."""
     if settings.logo_path.suffix.lower() == ".svg":
         try:
             rendered = resvg_py.svg_to_bytes(
@@ -176,7 +177,7 @@ def _official_logo(settings: Settings) -> tuple[Image.Image, tuple[int, int]]:
             source.load()
             logo = source.convert("RGBA")
 
-    layout = settings.logo_layout
+    layout = layout if layout is not None else settings.logo_layout
     if layout.get("trim_transparent_padding", True):
         bounds = logo.getchannel("A").getbbox()
         if bounds is None:
@@ -186,7 +187,7 @@ def _official_logo(settings: Settings) -> tuple[Image.Image, tuple[int, int]]:
     visible_width = int(layout["visible_width"])
     visible_height = max(1, round(logo.height * visible_width / logo.width))
     logo = logo.resize((visible_width, visible_height), Image.Resampling.LANCZOS)
-    position = (int(layout["x"]), int(layout["y"]))
+    position = anchor_position(layout, (visible_width, visible_height), settings)
     right = position[0] + logo.width
     bottom = position[1] + logo.height
     if position[0] < 0 or position[1] < 0 or right > settings.width or bottom > settings.height:
@@ -194,9 +195,44 @@ def _official_logo(settings: Settings) -> tuple[Image.Image, tuple[int, int]]:
     return logo, position
 
 
-def _verification_badge(settings: Settings, artist_dir: Path) -> tuple[Image.Image, tuple[int, int]]:
-    layout = settings.badge_layout
-    size = int(layout["size"])
+def anchor_position(layout: dict[str, Any], size: tuple[int, int], settings: Settings) -> tuple[int, int]:
+    """موقعیت از لنگرهای صریح x/y یا center_x/top_y/right_of_x/bottom_y (+ offset)."""
+    width, height = size
+    offset_x = int(layout.get("offset_x", 0))
+    offset_y = int(layout.get("offset_y", 0))
+
+    if "x" in layout:
+        x = int(layout["x"])
+    elif "right_of_x" in layout:
+        x = int(layout["right_of_x"]) - width
+    elif "center_x" in layout:
+        x = round(int(layout["center_x"]) - width / 2)
+    else:
+        raise ValidationError("چیدمان باید یکی از لنگرهای x، right_of_x یا center_x را داشته باشد.")
+
+    if "y" in layout:
+        y = int(layout["y"])
+    elif "bottom_y" in layout:
+        y = int(layout["bottom_y"]) - height
+    elif "top_y" in layout:
+        y = int(layout["top_y"])
+    elif "center_y" in layout:
+        y = round(int(layout["center_y"]) - height / 2)
+    else:
+        raise ValidationError("چیدمان باید یکی از لنگرهای y، top_y، bottom_y یا center_y را داشته باشد.")
+
+    return x + offset_x, y + offset_y
+
+
+
+def _verification_badge(
+    settings: Settings,
+    artist_dir: Path,
+    layout: dict[str, Any] | None = None,
+    position: tuple[int, int] | None = None,
+) -> tuple[Image.Image, tuple[int, int]]:
+    badge_layout = layout if layout is not None else settings.badge_layout
+    size = int(badge_layout["size"])
     supersampled_size = size * 4
     badge = Image.new("RGBA", (supersampled_size, supersampled_size), (0, 0, 0, 0))
 
@@ -218,13 +254,51 @@ def _verification_badge(settings: Settings, artist_dir: Path) -> tuple[Image.Ima
             badge = Image.alpha_composite(badge, layer)
 
     badge = badge.resize((size, size), Image.Resampling.LANCZOS)
-    position = (int(layout["x"]), int(layout["y"]))
+    if position is None:
+        position = anchor_position(badge_layout, (size, size), settings)
     if position[0] < 0 or position[1] < 0 or position[0] + size > settings.width or position[1] + size > settings.height:
         raise ValidationError("چیدمان نشان تأیید خارج از قاب قرار می‌گیرد.")
     return badge, position
 
 
-def compose_final(master: Image.Image, settings: Settings, artist_dir: Path, verified: bool) -> Image.Image:
+def content_box_from_transform(transform: dict[str, Any] | None, settings: Settings) -> tuple[int, int, int, int]:
+    """مستطیل واقعیِ محتوای پرتره داخل قاب؛ برای برش دایره‌ای بدون حاشیهٔ مشکی."""
+    if not transform:
+        return (0, 0, settings.width, settings.height)
+    try:
+        offset_x = int(transform["offset_x"])
+        offset_y = int(transform["offset_y"])
+        resized_width = int(transform["resized_width"])
+        resized_height = int(transform["resized_height"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValidationError(f"فرادادهٔ transform برای تعیین جعبهٔ محتوا کامل نیست: {exc}") from exc
+    left = max(0, min(settings.width - 1, offset_x))
+    top = max(0, min(settings.height - 1, offset_y))
+    right = max(left + 1, min(settings.width, left + resized_width))
+    bottom = max(top + 1, min(settings.height, top + resized_height))
+    return (left, top, right, bottom)
+
+
+def compose_output(
+    master: Image.Image,
+    settings: Settings,
+    artist_dir: Path,
+    verified: bool,
+    name_fa: str | None = None,
+    name_en: str | None = None,
+    content_box: tuple[int, int, int, int] | None = None,
+) -> tuple[Image.Image, dict[str, Any] | None]:
+    """خروجی برند و، در حالت پروفایل، اطلاعات هندسهٔ ثبت‌شدنی در metadata."""
+    if settings.profile_enabled:
+        from .profile import compose_profile
+
+        if not name_fa or not name_en:
+            raise ValidationError(
+                "چیدمان پروفایل فعال است اما نام نمایشی در دسترس نیست؛ "
+                "نام فارسی و لاتین باید از فرادادهٔ هنرمند بیایند، نه از مدل تصویرساز."
+            )
+        return compose_profile(master, settings, artist_dir, verified, name_fa, name_en, content_box)
+
     if master.size != (settings.width, settings.height):
         raise ValidationError("پرترهٔ اصلی پیش از ترکیب باید 1080×1080 باشد.")
     final = master.convert("RGB").copy()
@@ -233,7 +307,33 @@ def compose_final(master: Image.Image, settings: Settings, artist_dir: Path, ver
     if verified:
         badge, badge_position = _verification_badge(settings, artist_dir)
         final.paste(badge, badge_position, badge)
-    return final
+    return final, None
+
+
+def compose_final(
+    master: Image.Image,
+    settings: Settings,
+    artist_dir: Path,
+    verified: bool,
+    name_fa: str | None = None,
+    name_en: str | None = None,
+    content_box: tuple[int, int, int, int] | None = None,
+) -> Image.Image:
+    image, _ = compose_output(
+        master, settings, artist_dir, verified, name_fa=name_fa, name_en=name_en, content_box=content_box
+    )
+    return image
+
+
+def brand_inputs(settings: Settings, metadata: dict[str, Any]) -> dict[str, Any]:
+    """ورودی‌های چیدمان برند از فراداده؛ نام‌ها هرگز از مدل تصویرساز خواسته نمی‌شوند."""
+    return {
+        "name_fa": metadata.get("name_fa"),
+        "name_en": metadata.get("name_en"),
+        "content_box": content_box_from_transform(
+            metadata.get("generation", {}).get("transform"), settings
+        ),
+    }
 
 
 def circular_preview(final: Image.Image) -> Image.Image:

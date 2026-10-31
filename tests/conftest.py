@@ -23,6 +23,7 @@ def system_root(tmp_path: Path) -> Path:
         tmp_path / "brand-kit" / "prompts" / "artist-portrait-fa.txt",
     )
     shutil.copytree(REPOSITORY_ROOT / "brand-kit" / "badges", tmp_path / "brand-kit" / "badges")
+    shutil.copytree(REPOSITORY_ROOT / "brand-kit" / "fonts", tmp_path / "brand-kit" / "fonts")
     shutil.copy2(
         REPOSITORY_ROOT / "logo-ahangban" / "ahangban-logo-horizontal-reverse.svg",
         tmp_path / "logo-ahangban" / "ahangban-logo-horizontal-reverse.svg",

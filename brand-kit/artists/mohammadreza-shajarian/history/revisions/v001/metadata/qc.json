@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0",
+  "checked_at": "2026-10-24T14:27:26Z",
+  "artist_id": "mohammadreza-shajarian",
+  "slug": "mohammadreza-shajarian",
+  "name_fa": "محمدرضا شجریان",
+  "name_en": "Mohammadreza Shajarian",
+  "revision": 1,
+  "verification_status": "unverified",
+  "technical_status": "pass",
+  "visual_review_status": "approved",
+  "acceptance_status": "pass",
+  "checks": [
+    {
+      "id": "reference_unmodified",
+      "status": "pass",
+      "detail": "هش مرجع و مسیر source بررسی شد؛ expected=db0b7a49142b13f0f28ae6effe5f002a4effd6b8a47573b9ebd96ecd466f84bd, actual=db0b7a49142b13f0f28ae6effe5f002a4effd6b8a47573b9ebd96ecd466f84bd"
+    },
+    {
+      "id": "verification_data_consistent",
+      "status": "pass",
+      "detail": "وضعیت، مقدار بولین و منبع صریح/پیش‌فرض باید سازگار باشند؛ استنباط از چهره مجاز نیست."
+    },
+    {
+      "id": "fixed_brand_assets_unmodified",
+      "status": "pass",
+      "detail": "هش فایل رسمی لوگو و لایه‌های SVG مستقل با فرادادهٔ پروژه مقایسه شد."
+    },
+    {
+      "id": "design_version_consistent",
+      "status": "pass",
+      "detail": "طراحی پروژه=1.0.0، طراحی ابزار=1.0.0"
+    },
+    {
+      "id": "master_png_1080_srgb",
+      "status": "pass",
+      "detail": "PNG سالم؛ انتظار: 1080×1080، RGB، دارای پروفایل sRGB. نتیجه: 1080×1080، RGB، sRGB=True (sRGB built-in)"
+    },
+    {
+      "id": "final_png_1080_srgb",
+      "status": "pass",
+      "detail": "PNG سالم؛ انتظار: 1080×1080، RGB، دارای پروفایل sRGB. نتیجه: 1080×1080، RGB، sRGB=True (sRGB built-in)"
+    },
+    {
+      "id": "preview_png_1080_srgb",
+      "status": "pass",
+      "detail": "PNG سالم؛ انتظار: 1080×1080، RGBA، دارای پروفایل sRGB. نتیجه: 1080×1080، RGBA، sRGB=True (sRGB built-in)"
+    },
+    {
+      "id": "only_active_verification_preview",
+      "status": "pass",
+      "detail": "پیش‌نمایش وضعیت مخالف نباید وجود داشته باشد: artist-verified-preview.png"
+    },
+    {
+      "id": "metadata_output_paths",
+      "status": "pass",
+      "detail": "مسیرهای master/final/preview در فراداده باید با وضعیت و ساختار واقعی مطابقت داشته باشند."
+    },
+    {
+      "id": "final_matches_master_logo_and_verification",
+      "status": "pass",
+      "detail": "خروجی از master بدون نشان، لوگوی رسمی و نشانِ مطابق metadata به‌صورت قطعی بازتولید و مقایسه شد."
+    },
+    {
+      "id": "circular_preview_matches_final",
+      "status": "pass",
+      "detail": "پیش‌نمایش شفاف دایره‌ای دقیقاً از خروجی وضعیت فعلی ساخته شده است."
+    },
+    {
+      "id": "brand_layers_inside_circular_crop",
+      "status": "pass",
+      "detail": "قاب‌بندی محافظه‌کارانهٔ لوگو و نشان داخل دایرهٔ 1080 بررسی شد؛ امنی چهره نیازمند بازبینی بصری است."
+    }
+  ],
+  "required_visual_checks": [
+    "identity-preserved-against-reference",
+    "face-safe-in-central-80-percent-and-circular-crop",
+    "readable-at-small-size",
+    "natural-skin-and-editorial-brand-consistency",
+    "no-unintended-text-watermark-instrument-or-generated-logo",
+    "master-has-no-verification-badge"
+  ],
+  "files": {
+    "reference": {
+      "path": "brand-kit/artists/mohammadreza-shajarian/source/reference-original.jpg",
+      "sha256": "db0b7a49142b13f0f28ae6effe5f002a4effd6b8a47573b9ebd96ecd466f84bd",
+      "width": 798,
+      "height": 495,
+      "format": "JPEG"
+    },
+    "master": {
+      "path": "brand-kit/artists/mohammadreza-shajarian/portrait/artist-master.png",
+      "format": "PNG",
+      "width": 1080,
+      "height": 1080,
+      "mode": "RGB",
+      "has_icc_profile": true,
+      "srgb_profile": true,
+      "icc_profile_description": "sRGB built-in",
+      "bytes": 676796,
+      "sha256": "f7c55b1f06fb2bf47db902d396a461d5be3652bbcbac46f61a94ff4662f3f613"
+    },
+    "final": {
+      "path": "brand-kit/artists/mohammadreza-shajarian/portrait/artist-1080x1080.png",
+      "format": "PNG",
+      "width": 1080,
+      "height": 1080,
+      "mode": "RGB",
+      "has_icc_profile": true,
+      "srgb_profile": true,
+      "icc_profile_description": "sRGB built-in",
+      "bytes": 680539,
+      "sha256": "21e54e38efb3228fdbeb6b87822e34b35fd90100505c0eb9c0ab3c44382a555b"
+    },
+    "preview": {
+      "path": "brand-kit/artists/mohammadreza-shajarian/portrait/artist-unverified-preview.png",
+      "format": "PNG",
+      "width": 1080,
+      "height": 1080,
+      "mode": "RGBA",
+      "has_icc_profile": true,
+      "srgb_profile": true,
+      "icc_profile_description": "sRGB built-in",
+      "bytes": 775285,
+      "sha256": "6d54515e0f1c7aebc571221aeaed8a87352d26b3eca1f58624c5d381c37ddd0c"
+    }
+  },
+  "limitations": [
+    "خروجی شامل upscale از master ورودی است؛ وضوح واقعی به منبع محدود است و این وضعیت با پذیرش بصری حذف نمی‌شود."
+  ],
+  "note": "Technical QC does not perform facial recognition and never infers identity or verification status."
+}

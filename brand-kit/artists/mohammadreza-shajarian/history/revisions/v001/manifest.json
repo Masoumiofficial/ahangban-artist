@@ -1,0 +1,29 @@
+{
+  "archived_at": "2026-10-31T11:53:33Z",
+  "artist_id": "mohammadreza-shajarian",
+  "source_revision": 1,
+  "reason": "ارتقای چیدمان به 1.1.0: افزودن لایهٔ نام فارسی و لاتین (Vazirmatn، رندر SVG با shaping راست‌به‌چپ) داخل دایرهٔ مرکزی، بزرگ‌تر‌شدن مدالیون پرتره، خط جداکنندهٔ برند و جابه‌جایی لوگوی رسمی به زیر بلوک نام. پرترهٔ master بدون هیچ تغییری از همان برش غیرمولّد پیشین بازاستفاده شد.",
+  "master_included": true,
+  "files": [
+    {
+      "path": "brand-kit/artists/mohammadreza-shajarian/portrait/artist-master.png",
+      "sha256": "f7c55b1f06fb2bf47db902d396a461d5be3652bbcbac46f61a94ff4662f3f613"
+    },
+    {
+      "path": "brand-kit/artists/mohammadreza-shajarian/portrait/artist-1080x1080.png",
+      "sha256": "21e54e38efb3228fdbeb6b87822e34b35fd90100505c0eb9c0ab3c44382a555b"
+    },
+    {
+      "path": "brand-kit/artists/mohammadreza-shajarian/portrait/artist-unverified-preview.png",
+      "sha256": "6d54515e0f1c7aebc571221aeaed8a87352d26b3eca1f58624c5d381c37ddd0c"
+    },
+    {
+      "path": "brand-kit/artists/mohammadreza-shajarian/metadata/artist.json",
+      "sha256": "642a923f9a655e3e67fd5a779c7030c91346af7840180c2005de9be650084a5b"
+    },
+    {
+      "path": "brand-kit/artists/mohammadreza-shajarian/metadata/qc.json",
+      "sha256": "837bc4d06690cd44428b12e8b7cb86e9e96da2077e3cb07b4ca5e788a2e4fe30"
+    }
+  ]
+}

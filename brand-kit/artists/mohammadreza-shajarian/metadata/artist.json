@@ -12,9 +12,9 @@
     "note": "Verification is project data; a badge on an image is not identity evidence."
   },
   "created_at": "2026-10-24T14:24:27Z",
-  "updated_at": "2026-10-24T14:25:14Z",
-  "design_version": "1.0.0",
-  "revision": 1,
+  "updated_at": "2026-10-31T11:55:02Z",
+  "design_version": "1.1.0",
+  "revision": 2,
   "paths": {
     "reference": "brand-kit/artists/mohammadreza-shajarian/source/reference-original.jpg",
     "master": "brand-kit/artists/mohammadreza-shajarian/portrait/artist-master.png",
@@ -58,6 +58,10 @@
       "commit": "a306da2e0664e98de393627721d2a72ac952e7bb",
       "brand_book": "brand-kit/brand-book-fa.md",
       "design_system": "brand-kit/design-system-fa.md"
+    },
+    "font_sha256": {
+      "Vazirmatn-Regular.ttf": "b69fd4c680b8f3f225feabcc655a2c585d97627b8f5f5c0f9985e894069f3a56",
+      "Vazirmatn-Bold.ttf": "f635fdbea28f265de395ba83b4b1570dcf2f58d13c65469e61903b1c2d2ae723"
     }
   },
   "generation": {
@@ -65,32 +69,32 @@
     "prompt_version": "1.0",
     "mode": "reference-preserving external edit required",
     "identity_guaranteed_by_pipeline": false,
-    "generator": "non-generative editorial crop only; crop=(200,0,695,495); no AI synthesis, no colorization, no relighting",
-    "external_master_sha256": "875c4490d2a0e2e53b38a2a9077cb44c7ed463ea990d05cd2f4f667f0094c3f6",
+    "generator": "non-generative editorial crop of reference (unchanged from r1); no AI synthesis",
+    "external_master_sha256": "f7c55b1f06fb2bf47db902d396a461d5be3652bbcbac46f61a94ff4662f3f613",
     "transform": {
       "operation": "exif-orientation, sRGB conversion, proportional contain, centered charcoal canvas",
       "generative_retouching_by_pipeline": false,
       "source_format": "PNG",
-      "source_width": 495,
-      "source_height": 495,
+      "source_width": 1080,
+      "source_height": 1080,
       "resized_width": 1080,
       "resized_height": 1080,
       "offset_x": 0,
       "offset_y": 0,
-      "scale": 2.18181818,
-      "upscaled": true,
+      "scale": 1.0,
+      "upscaled": false,
       "background_fill": "#111111"
     },
-    "master_sha256": "f7c55b1f06fb2bf47db902d396a461d5be3652bbcbac46f61a94ff4662f3f613"
+    "master_sha256": "6feb39768416249db72fce3dd5af8ac3908be78a001ca861169f13757f15e52b"
   },
   "review": {
     "status": "approved",
-    "revision": 1,
+    "revision": 2,
     "reviewer": "Arena agent visual review",
-    "reviewed_at": "2026-10-24T14:25:14Z",
-    "notes": "مرجع سیاه‌وسفید، مرجع رنگی، master، خروجی نهایی، پیش‌نمایش دایره‌ای و نسخهٔ 128×128 مشاهده شدند. هویت، سن ظاهری، مو و لباس با مرجع سازگارند؛ تنها برش غیرمولّد و resample انجام شده و هیچ تولید چهره یا رنگی‌سازی صورت نگرفته است. مو، پیشانی و چانه در دایره امن‌اند و چهره در اندازهٔ کوچک خواناست. master بدون لایه‌های برند و final فقط با لوگوی رسمی و بدون نشان تأیید است. محدودیت: منبع 495px ارتفاع دارد و خروجی upscale است؛ هیچ جزئیات جایگزینی اختراع نشده است.",
-    "master_sha256": "f7c55b1f06fb2bf47db902d396a461d5be3652bbcbac46f61a94ff4662f3f613",
-    "final_sha256": "21e54e38efb3228fdbeb6b87822e34b35fd90100505c0eb9c0ab3c44382a555b",
+    "reviewed_at": "2026-10-31T11:55:02Z",
+    "notes": "مرجع سیاه‌وسفید 798×495، master، خروجی نهایی 1080×1080، نسخهٔ 320 و 128، پیش‌نمایش دایره‌ای و یک نسخهٔ نمونهٔ verified مشاهده شدند. پرتره تغییر نکرده است: master پیکسل‌به‌پیکسل با نسخهٔ بایگانی‌شدهٔ r1 یکسان است و هیچ تولید چهره، رنگی‌سازی یا رتوشی انجام نشده. هویت، سن ظاهری، مو و لباس با مرجع سازگار است. چیدمان 1.1.0: مو و پیشانی داخل حلقه‌اند و هیچ بخشی از چهره بریده نشده؛ نام فارسی (86px، Vazirmatn Bold) و نام لاتین (33px) کامل داخل حلقه می‌مانند و از خط آبی عبور نمی‌کنند؛ نام‌ها خوانا و بدون هیچ نویسهٔ جایگزین یا غلط‌انداز هستند و دقیقاً با name_fa/name_en در فراداده مطابقت دارند؛ لوگوی رسمی reverse بدون بازنویسی یا تغییر رنگ استفاده شده و در 128px هم قابل تشخیص است. نشان تأیید در نسخهٔ نمونهٔ verified در ربع بالا-راست روی حلقه قرار می‌گیرد و با بلوک نام برخورد ندارد. محدودیت‌ها: خروجی همچنان upscale از منبع 495px ارتفاع است؛ در 128px نوشتار لاتین و لوگو ریز اما قابل تشخیص‌اند.",
+    "master_sha256": "6feb39768416249db72fce3dd5af8ac3908be78a001ca861169f13757f15e52b",
+    "final_sha256": "9946a213b4c6fa6557dc051ce22bb0d5465eba2d91d04b737dadfe4a77cd19c9",
     "checks": {
       "identity_preserved": true,
       "face_safe_in_central_80_percent_and_circle": true,
@@ -114,12 +118,152 @@
       "verification": "unverified",
       "master_sha256": "f7c55b1f06fb2bf47db902d396a461d5be3652bbcbac46f61a94ff4662f3f613",
       "final_sha256": "21e54e38efb3228fdbeb6b87822e34b35fd90100505c0eb9c0ab3c44382a555b"
+    },
+    {
+      "revision": 2,
+      "at": "2026-10-31T11:53:33Z",
+      "type": "finalization",
+      "description": "ارتقای چیدمان به 1.1.0: افزودن لایهٔ نام فارسی و لاتین (Vazirmatn، رندر SVG با shaping راست‌به‌چپ) داخل دایرهٔ مرکزی، بزرگ‌تر‌شدن مدالیون پرتره، خط جداکنندهٔ برند و جابه‌جایی لوگوی رسمی به زیر بلوک نام. پرترهٔ master بدون هیچ تغییری از همان برش غیرمولّد پیشین بازاستفاده شد.",
+      "verification": "unverified",
+      "master_sha256": "6feb39768416249db72fce3dd5af8ac3908be78a001ca861169f13757f15e52b",
+      "final_sha256": "9946a213b4c6fa6557dc051ce22bb0d5465eba2d91d04b737dadfe4a77cd19c9",
+      "previous_version_archive": "brand-kit/artists/mohammadreza-shajarian/history/revisions/v001"
     }
   ],
   "quality": {
     "technical_status": "pass",
     "acceptance_status": "pass",
-    "last_checked_at": "2026-10-24T14:27:26Z",
+    "last_checked_at": "2026-10-31T11:55:37Z",
     "report": "brand-kit/artists/mohammadreza-shajarian/metadata/qc.json"
+  },
+  "brand_baseline_alignment": {
+    "at": "2026-10-31T11:53:33Z",
+    "changes": {
+      "font_sha256": "ثبت نخستین هش فونت‌های پین‌شده برای پروژهٔ پیش از 1.1.0",
+      "design_version": {
+        "from": "1.0.0",
+        "to": "1.1.0"
+      }
+    }
+  },
+  "profile": {
+    "design_version": "1.1.0",
+    "safe_circle": {
+      "center_x": 540.0,
+      "center_y": 540.0,
+      "radius": 432.0
+    },
+    "portrait": {
+      "bbox": [
+        119,
+        119,
+        961,
+        961
+      ],
+      "ring": {
+        "center_x": 540,
+        "center_y": 540,
+        "stroke_center_radius": 418.5,
+        "outer_radius": 421,
+        "width_px": 5,
+        "gap_px": 4,
+        "color": "#185ADB",
+        "alpha": 216
+      },
+      "fit": "medallion"
+    },
+    "names": {
+      "font_family": "Vazirmatn",
+      "containment_circle": {
+        "center_x": 540.0,
+        "center_y": 540.0,
+        "radius": 403.0
+      },
+      "lines": [
+        {
+          "role": "name_fa",
+          "text": "محمدرضا شجریان",
+          "size_px": 86,
+          "weight": 700,
+          "baseline_y": 722,
+          "letter_spacing_px": 0,
+          "ink_bbox": [
+            233,
+            661,
+            847,
+            747
+          ],
+          "shrink_applied": false
+        },
+        {
+          "role": "name_en",
+          "text": "MOHAMMADREZA SHAJARIAN",
+          "size_px": 33,
+          "weight": 400,
+          "baseline_y": 790,
+          "letter_spacing_px": 7,
+          "ink_bbox": [
+            233,
+            764,
+            847,
+            793
+          ],
+          "shrink_applied": false
+        }
+      ],
+      "divider": {
+        "x": 474,
+        "y": 752,
+        "width": 132,
+        "height": 3,
+        "fill": "#185ADB",
+        "opacity": 0.9216,
+        "rx": 0
+      },
+      "block_bbox": [
+        233,
+        661,
+        847,
+        793
+      ],
+      "element_bboxes": {
+        "line:name_fa": [
+          233,
+          661,
+          847,
+          747
+        ],
+        "line:name_en": [
+          233,
+          764,
+          847,
+          793
+        ],
+        "divider": [
+          474,
+          752,
+          606,
+          755
+        ]
+      }
+    },
+    "logo": {
+      "bbox": [
+        440,
+        826,
+        640,
+        865
+      ],
+      "visible_width": 200,
+      "position": [
+        440,
+        826
+      ]
+    },
+    "badge": {
+      "applied": false,
+      "bbox": null
+    },
+    "rendered_at": "2026-10-31T11:53:33Z"
   }
 }
